@@ -6,12 +6,13 @@ This project started as a React Events application and was rebuilt with Next.js 
 
 # Setup install and run
 
-git clone 
-cd events-nextjs
-npm install
-Create .env with DATABASE_URL and AUTH_SECRET
-PostgreSQL Docker container docker start events-postgres
-npm run dev
+- git clone 
+- cd events-nextjs
+- npm install
+- Create .env with DATABASE_URL and AUTH_SECRET
+- PostgreSQL Docker container docker start events-postgres
+- npm run dev
+
 
 ## Features
 
