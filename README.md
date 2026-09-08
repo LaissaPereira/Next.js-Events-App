@@ -4,7 +4,8 @@ A full-stack Events application built with Next.js to explore modern full-stack 
 
 This project started as a React Events application and was rebuilt with Next.js to understand how Next.js can handle the frontend, backend, API layer, authentication, and database access inside one application.
 
-#Setup install and run
+# Setup install and run
+
 git clone 
 cd events-nextjs
 npm install
