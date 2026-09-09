@@ -1,10 +1,17 @@
+import { Suspense } from "react"
+import { RecommendedEvents } from "@/components/RecommendedEvents"
+import { RecommendedEventsSkeleton } from "@/components/RecommendedEventsSkeleton"
 import { listEvents } from "@/server/services/event.services"
-import { EventCard } from "@/components/EventCard"
 import { sortDateEvents } from "@/utils/sortDateEvents"
+import { EventsList } from "@/components/EventsList"
+import { getCurrentUser } from "@/server/auth/current-user"
 
+export const instant = false
 
 export default async function EventsPage(){
+
    const events = await listEvents()
+   const user = await getCurrentUser()
    const transformedEvents = events.map(event => ({
       ...event,
       date: event.date.toString()
@@ -22,12 +29,23 @@ export default async function EventsPage(){
                     <p className="text-base-content/70">No events yet. Create your first one!</p>
                 </div>
             ) : (
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-8">
-                    {sortedEvents.map((event) => (
-                        <EventCard key={event.id} event={event} />
-                    ))}
-                </div>
+                 <EventsList events={sortedEvents} currentUser={user ? {id: user.id, role: user.role} : null} />       
             )}
+            <section className="mt-16">
+        <div className="mb-6">
+          <p className="text-sm font-medium uppercase tracking-widest text-zinc-500">
+            Discover
+          </p>
+
+          <h2 className="mt-2 text-2xl font-bold tracking-tight">
+            Recommended Events
+          </h2>
+        </div>
+           
+            <Suspense fallback={<RecommendedEventsSkeleton />}>
+                <RecommendedEvents />
+            </Suspense>
+             </section>
         </main>
     )
 }

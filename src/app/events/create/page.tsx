@@ -2,6 +2,7 @@ import { redirect } from "next/navigation"
 import { EventForm } from "@/components/EventForm"
 import { getCurrentUser } from "@/server/auth/current-user"
 
+export const instant = false
 
 export default async function CreateEventPage(){
     const user = await getCurrentUser()

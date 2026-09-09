@@ -1,7 +1,12 @@
 import { db } from "@/prisma/db"
+import type { EventWithOrganizer } from "@/types/event"
 
 export async function getEvents(){
     return await db.orm.public.Event.all()
+}
+export async function getEventsWithOrganizer(){
+    // The ORM's generic `include()` typing doesn't resolve the related row shape for namespaced to-one relations, so assert the known shape.
+    return db.orm.public.Event.include('organizer').all() as unknown as Promise<EventWithOrganizer[]>
 }
 
 export async function getEventById(id: string){
@@ -36,3 +41,4 @@ export async function deleteEventInDatabase(id: string){
         .where({ id })
         .delete()
 }
+

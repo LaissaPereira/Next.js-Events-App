@@ -1,25 +1,54 @@
 "use server"
 import { createEvent, updateEvent, deleteEvent } from "@/server/services/event.services"
-import { revalidatePath } from "next/cache"
+import { updateTag } from "next/cache"
 import { redirect } from "next/navigation"
+import { AppError } from "@/server/errors/app-error"
 
 
-export async function createEventAction(data: unknown){
-   
+export async function createEventAction(data: unknown){  
    await createEvent(data)
-   revalidatePath("/events")
+   updateTag("events")
    redirect("/events")    
 }
 
 export async function updateEventAction(id: string, data: unknown){
     await updateEvent(id, data)
-    revalidatePath("/events")
-    revalidatePath(`/events/${id}`)
+    updateTag("events")
+    updateTag(`events-${id}`)
     redirect(`/events/${id}`)
 }
 
-export async function deleteEventAction(id: string){
+type DeleteEventResult =
+  | {
+      success: true
+    }
+  | {
+      success: false
+      message: string
+    }
+
+export async function deleteEventAction(id: string): Promise<DeleteEventResult> {
+  try {
     await deleteEvent(id)
-    revalidatePath("/events")
-    redirect("/events")
+    updateTag("events")
+    updateTag(`events-${id}`)
+    
+    return {
+      success: true,
+    }
+  } catch (error) {
+    if (error instanceof AppError) {
+      return {
+        success: false,
+        message: error.message,
+      }
+    }
+
+    console.error(error)
+
+    return {
+      success: false,
+      message: "Could not delete the event.",
+    }
+  }
 }

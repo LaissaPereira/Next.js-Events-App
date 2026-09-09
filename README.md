@@ -94,3 +94,89 @@ External Client / Postman / Mobile App
                  ↓
             PostgreSQL
 
+Authentication and Authorization
+
+Authentication is handled with Auth.js.
+
+The authenticated user is resolved on the server and loaded from the database:
+
+Login
+  |
+  v
+Auth.js
+  |
+  v
+getCurrentUser()
+  |
+  v
+User from PostgreSQL
+
+The User model includes a role:
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+New accounts are created as USER by default.
+
+Authorization combines role-based access control with resource ownership:
+
+USER
+- Can browse events
+- Can create events
+- Can edit/delete events they own
+
+ADMIN
+- Can browse events
+- Can create events
+- Can edit/delete any event
+
+The UI hides management actions when a user does not have permission, but the real authorization checks are enforced on the server.
+
+Loading, Errors, and Streaming
+
+The project uses App Router conventions such as:
+
+loading.tsx
+error.tsx
+not-found.tsx
+
+Suspense is used for slower sections so the rest of the page can render without waiting for every server operation to finish.
+
+Events page        -> ready
+Event cards        -> ready
+Recommendations    -> loading skeleton
+                         |
+                         v
+                    streamed later
+
+Caching and Revalidation
+
+Public event data can be cached on the server and revalidated after mutations.
+
+The project explores:
+
+cache tags
+
+cache invalidation
+
+updateTag()
+
+route refreshes after mutations
+
+keeping PostgreSQL as the source of truth
+
+Conceptually:
+
+Read
+-> Cache
+-> Reuse
+
+Mutation
+-> PostgreSQL changes
+-> Invalidate event data
+-> Fresh server state
+
+
+

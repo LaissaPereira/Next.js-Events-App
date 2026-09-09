@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation"
 import { EventForm } from "@/components/EventForm"
 import { getCurrentUser } from "@/server/auth/current-user"
 
+export const instant = false
 
 type EditEventPageProps = {
     params: Promise<{id: string}>
@@ -21,7 +22,7 @@ export default async function EditEventPage({params}: EditEventPageProps){
         notFound()
     }
     
-    if(event.organizerId !== user.id){
+    if(event.organizerId !== user.id && user.role !== "ADMIN"){
         redirect(`/events/${id}`)
     }
 

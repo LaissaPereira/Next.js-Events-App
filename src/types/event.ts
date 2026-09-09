@@ -7,6 +7,17 @@ export type Event = {
     organizerId?: string
 }
 
+export type EventOrganizer = {
+    id: string
+    name: string | null
+    email: string
+    role: "USER" | "ADMIN"
+}
+
+export type EventWithOrganizer = Event & {
+    organizer: EventOrganizer
+}
+
 export type EventsResponse = {
     totalCount: number
     totalPages: number

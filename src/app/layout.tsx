@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Header } from "@/components/Header"
+import { HeaderSkeleton } from "@/components/HeaderSkeleton"
 
 import "./globals.css";
 
@@ -15,7 +17,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className="h-full antialiased"
     >
       <body className="min-h-screen bg-base-200">
-        <Header />
+        <Suspense fallback={<HeaderSkeleton />}>
+          <Header />
+        </Suspense>
         <main className="mx-auto w-full max-w-6xl p-6">
         {children}   
         </main>

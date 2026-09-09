@@ -1,12 +1,22 @@
+import { cacheTag } from "next/cache"
 import { eventSchema } from "@/lib/validations/event"
-import { createEventInDatabase, deleteEventInDatabase, getEventById, getEvents, updateEventInDatabase } from "@/server/repositories/event.repository"
+import { createEventInDatabase, deleteEventInDatabase, getEventById, getEvents, getEventsWithOrganizer, updateEventInDatabase } from "@/server/repositories/event.repository"
 import { getCurrentUser } from "@/server/auth/current-user"
 import { AppError } from "../errors/app-error"
 
 
 export async function listEvents(){
+    "use cache"
+    cacheTag("events")
     return await getEvents()
 }
+
+export async function listEventsWithOrganizer(){
+    "use cache"
+    cacheTag("events")
+    return await getEventsWithOrganizer()
+}
+
 
 export async function requireEvent(id: string){
     const event = await getEventById(id)
@@ -22,17 +32,21 @@ async function requiredCurrentUser(){
     }
     return user
 }
-async function requireEventOwner(eventId: string){
+async function requireEventManager(eventId: string){
     const event = await requireEvent(eventId)
     const user = await requiredCurrentUser()
-    if(event.organizerId !== user.id){
-        throw new AppError("FORBIDDEN", "You do not have permission to perform this action")
+    const isOwner = event.organizerId === user.id
+    const isAdmin = user.role === "ADMIN"
+
+    if(!isOwner && !isAdmin){
+        throw new AppError("FORBIDDEN", "You do not have permission to perform this action.")
     }
+    
     return { user, event }
 }
-
-
 export async function findEvent(id: string){
+    "use cache"
+    cacheTag(`events-${id}`)
     return await getEventById(id)
 }
 
@@ -52,7 +66,7 @@ export async function createEvent(data: unknown){
 
 export async function updateEvent(id: string, data: unknown){
 
-    await requireEventOwner(id)
+    await requireEventManager(id)
     const validatedData = eventSchema.parse(data)
 
     return await updateEventInDatabase(id, {
@@ -65,7 +79,7 @@ export async function updateEvent(id: string, data: unknown){
 
 export async function deleteEvent(id: string){
 
-    await requireEventOwner(id)
+    await requireEventManager(id)
 
     return await deleteEventInDatabase(id)
 }

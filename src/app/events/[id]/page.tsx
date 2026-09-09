@@ -4,6 +4,7 @@ import Link from "next/link"
 import DeleteEventButton from "@/components/DeleteEventButton"
 import { getCurrentUser } from "@/server/auth/current-user"
 
+export const instant = false
 
 type EventDetailsPageProps = {
     params: Promise<{id: string}>
@@ -19,7 +20,7 @@ export default async function EventDetailsPage({ params }: EventDetailsPageProps
     }
 
     const user = await getCurrentUser();
-    const canManageEvent = user?.id === event.organizerId;
+    const canManageEvent = user && ( user.id === event.organizerId || user.role === "ADMIN")
 
     const formattedDate = new Date(event.date.toString()).toLocaleDateString('en-GB', { 
         day: '2-digit', 
@@ -30,7 +31,7 @@ export default async function EventDetailsPage({ params }: EventDetailsPageProps
     return(
         <main>
             <section className="mx-auto max-w-2xl p-4">
-            <h1 className="text-3xl font-bold">Event Details</h1>
+            <p className="text-sm font-medium uppercase tracking-widest text-zinc-500">Event Details</p>
             <div className="divider"></div>
             <div className="card bg-base-100 shadow-md mt-6">
             <div className="card-body">
@@ -45,8 +46,8 @@ export default async function EventDetailsPage({ params }: EventDetailsPageProps
             <div className="flex gap-3"> 
             {canManageEvent && (
                 <>
-                    <Link href={`/events/${event.id}/edit`} className="btn btn-secondary">Edit Event</Link>
-                    <DeleteEventButton id={id} />
+                    <Link href={`/events/${event.id}/edit`} className="btn btn-ghost btn-sm">Edit</Link>
+                    <DeleteEventButton eventId={id} />
                 </>
             )}
             </div>
