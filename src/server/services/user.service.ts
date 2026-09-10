@@ -17,6 +17,6 @@ export async function registerUser(data: unknown){
     return await createUserInDatabase({
         name: validatedData.name,
         email: validatedData.email,
-        password: passwordHash
+        passwordHash
     })
 }

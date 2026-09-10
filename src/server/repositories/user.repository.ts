@@ -12,6 +12,11 @@ export async function getUserById(id: string){
 export async function getAllUsers(){
     return await db.orm.public.User.all()
 }
+export async function updateUserRole(userId: string, role: "USER" | "ADMIN"){
+    return await db.orm.public.User
+    .where({id:userId})
+    .update({ role})
+}
 
 export async function createUserInDatabase(data:{
     name: string
