@@ -1,4 +1,4 @@
-import { findEvent } from "@/server/services/event.services"
+import { findEvent } from "@/server/services/event.service"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import DeleteEventButton from "@/components/DeleteEventButton"

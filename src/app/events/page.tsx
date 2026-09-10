@@ -1,7 +1,7 @@
 import { Suspense } from "react"
 import { RecommendedEvents } from "@/components/RecommendedEvents"
 import { RecommendedEventsSkeleton } from "@/components/RecommendedEventsSkeleton"
-import { listEvents } from "@/server/services/event.services"
+import { listEvents } from "@/server/services/event.service"
 import { sortDateEvents } from "@/utils/sortDateEvents"
 import { EventsList } from "@/components/EventsList"
 import { getCurrentUser } from "@/server/auth/current-user"

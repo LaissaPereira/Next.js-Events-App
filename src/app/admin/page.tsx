@@ -1,25 +1,58 @@
 import Link from "next/link"
 import { redirect } from "next/navigation"
-import { listEventsWithOrganizer } from "@/server/services/event.services"
+import { getAdminDashboardData } from "@/server/services/admin.service"
 import { getCurrentUser } from "@/server/auth/current-user"
 
 export const instant = false
 
-export default async function AdminPage(){
+export default async function AdminPage() {
 
-    const user = await getCurrentUser()
-    if (!user) {
-        redirect("/login")
-    }
-    if (user.role !== "ADMIN") {
-        redirect("/events")
-    }
+  const user = await getCurrentUser()
+  if (!user) {
+    redirect("/login")
+  }
+  if (user.role !== "ADMIN") {
+    redirect("/events")
+  }
 
-    const events = await listEventsWithOrganizer()
+  const { events, users, status } = await getAdminDashboardData()
 
-    return (
+  return (
     <main className="mx-auto max-w-6xl px-6 py-12">
       <section className="mb-10">
+
+        <section className="mb-12 grid gap-4 sm:grid-cols-3">
+          <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+            <p className="text-sm text-zinc-500">
+              Total Users
+            </p>
+
+            <p className="mt-2 text-3xl font-bold">
+              {status.totalUsers}
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+            <p className="text-sm text-zinc-500">
+              Total Events
+            </p>
+
+            <p className="mt-2 text-3xl font-bold">
+              {status.totalEvents}
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+            <p className="text-sm text-zinc-500">
+              Admins
+            </p>
+
+            <p className="mt-2 text-3xl font-bold">
+              {status.totalAdmins}
+            </p>
+          </div>
+        </section>
+
         <p className="text-sm font-medium uppercase tracking-widest text-zinc-500">
           Administration
         </p>
@@ -46,54 +79,118 @@ export default async function AdminPage(){
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white">
-          {events.map((event) => (
-            <div
-              key={event.id}
-              className="flex flex-col gap-4 border-b border-zinc-100 p-5 last:border-b-0 sm:flex-row sm:items-center sm:justify-between"
-            >
-              <div>
-                <h3 className="font-semibold">
-                  {event.title}
-                </h3>
+        {events.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-zinc-300 p-10 text-center">
+            <p className="text-sm text-zinc-500">No events yet.</p>
+          </div>
+        ) : (
+          <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white">
+            {events.map((event) => (
+              <div
+                key={event.id}
+                className="flex flex-col gap-4 border-b border-zinc-100 p-5 last:border-b-0 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div>
+                  <h3 className="font-semibold">
+                    {event.title}
+                  </h3>
 
-                <p className="mt-1 text-sm text-zinc-500">
-                  {event.location}
-                </p>
+                  <p className="mt-1 text-sm text-zinc-500">
+                    {event.location}
+                  </p>
 
-                <p>
-        Organizer:{" "}
-            <span className="font-medium text-zinc-700">
-            {event.organizer.name ?? "No name"}
-            </span>
-            </p>
+                  <p>
+                    Organizer:{" "}
+                    <span className="font-medium text-zinc-700">
+                      {event.organizer.name ?? "No name"}
+                    </span>
+                  </p>
 
-            <p>{event.organizer.email}</p>
+                  <p>{event.organizer.email}</p>
 
-            <span className="mt-2 inline-flex rounded-full bg-zinc-100 px-2.5 py-1 text-xs font-medium text-zinc-700">
-                {event.organizer.role}
-            </span>
+                  <span className="mt-2 inline-flex rounded-full bg-zinc-100 px-2.5 py-1 text-xs font-medium text-zinc-700">
+                    {event.organizer.role}
+                  </span>
+                </div>
+
+                <div className="flex gap-2">
+                  <Link
+                    href={`/events/${event.id}`}
+                    className="btn btn-ghost btn-sm"
+                  >
+                    View
+                  </Link>
+
+                  <Link
+                    href={`/events/${event.id}/edit`}
+                    className="btn btn-primary btn-sm"
+                  >
+                    Edit
+                  </Link>
+                </div>
               </div>
-
-              <div className="flex gap-2">
-                <Link
-                  href={`/events/${event.id}`}
-                  className="rounded-lg border border-zinc-200 px-3 py-2 text-sm font-medium hover:bg-zinc-50"
-                >
-                  View
-                </Link>
-
-                <Link
-                  href={`/events/${event.id}/edit`}
-                  className="rounded-lg bg-zinc-900 px-3 py-2 text-sm font-medium text-white hover:bg-zinc-700"
-                >
-                  Edit
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
+      <section className="mt-12">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold">
+            Users
+          </h2>
+
+          <p className="mt-1 text-sm text-zinc-500">
+            Manage registered users and their roles.
+          </p>
+        </div>
+
+        {users.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-zinc-300 p-10 text-center">
+            <p className="text-sm text-zinc-500">No users yet.</p>
+          </div>
+        ) : (
+          <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white">
+            {users.map((registeredUser) => (
+              <div
+                key={registeredUser.id}
+                className="flex flex-col gap-4 border-b border-zinc-100 p-5 last:border-b-0 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-semibold">
+                      {registeredUser.name ?? "No name"}
+                    </h3>
+
+                    <span
+                      className={
+                        registeredUser.role === "ADMIN"
+                          ? "rounded-full bg-zinc-900 px-2.5 py-1 text-xs font-medium text-white"
+                          : "rounded-full bg-zinc-100 px-2.5 py-1 text-xs font-medium text-zinc-700"
+                      }
+                    >
+                      {registeredUser.role}
+                    </span>
+                  </div>
+
+                  <p className="mt-1 text-sm text-zinc-500">
+                    {registeredUser.email}
+                  </p>
+                </div>
+
+                <div className="text-sm text-zinc-500">
+                  {registeredUser.eventCount}{" "}
+                  event
+                  {registeredUser.eventCount === 1
+                    ? ""
+                    : "s"}{" "}
+                  created
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
     </main>
   )
 }

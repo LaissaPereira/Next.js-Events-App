@@ -9,14 +9,18 @@ export async function getUserById(id: string){
     return await db.orm.public.User.first({ id })
 }
 
+export async function getAllUsers(){
+    return await db.orm.public.User.all()
+}
+
 export async function createUserInDatabase(data:{
     name: string
     email: string
-    password: string
+    passwordHash: string
 }){
     return await db.orm.public.User.create({
         name: data.name,
         email: data.email,
-        passwordHash: data.password
+        passwordHash: data.passwordHash
     })
 }

@@ -1,4 +1,4 @@
-import { findEvent } from "@/server/services/event.services"
+import { findEvent } from "@/server/services/event.service"
 import { notFound, redirect } from "next/navigation"  
 import { EventForm } from "@/components/EventForm"
 import { getCurrentUser } from "@/server/auth/current-user"

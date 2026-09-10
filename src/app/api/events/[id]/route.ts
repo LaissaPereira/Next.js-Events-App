@@ -1,4 +1,4 @@
-import { findEvent, updateEvent, deleteEvent } from "@/server/services/event.services"
+import { findEvent, updateEvent, deleteEvent } from "@/server/services/event.service"
 import { getCurrentUser } from "@/server/auth/current-user"
 import { handleApiError } from "@/server/http/handle-api-error"
 import { AppError } from "@/server/errors/app-error"

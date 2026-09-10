@@ -1,5 +1,5 @@
 "use server"
-import { createEvent, updateEvent, deleteEvent } from "@/server/services/event.services"
+import { createEvent, updateEvent, deleteEvent } from "@/server/services/event.service"
 import { updateTag } from "next/cache"
 import { redirect } from "next/navigation"
 import { AppError } from "@/server/errors/app-error"
