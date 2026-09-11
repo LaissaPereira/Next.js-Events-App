@@ -1,14 +1,26 @@
 import { cacheTag } from "next/cache"
 import { eventSchema } from "@/lib/validations/event"
-import { createEventInDatabase, deleteEventInDatabase, getEventById, getEvents, getEventsWithOrganizer, updateEventInDatabase } from "@/server/repositories/event.repository"
+import { createEventInDatabase, deleteEventInDatabase, getEventById, getEvents, getEventsCount, getEventsWithOrganizer, PAGE_SIZE, updateEventInDatabase } from "@/server/repositories/event.repository"
 import { getCurrentUser } from "@/server/auth/current-user"
 import { AppError } from "../errors/app-error"
 
+export { PAGE_SIZE }
 
-export async function listEvents(){
+type ListEventsOptions = {
+    search?: string
+    page: number
+}
+
+export async function listEvents({search, page}: ListEventsOptions){
     "use cache"
     cacheTag("events")
-    return await getEvents()
+    return await getEvents({search, page})
+}
+
+export async function countEvents({search}: { search?: string }){
+    "use cache"
+    cacheTag("events")
+    return await getEventsCount({search})
 }
 
 export async function listEventsWithOrganizer(){
